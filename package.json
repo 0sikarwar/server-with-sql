@@ -5,10 +5,14 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "nodemailer": "^6.4.11",
+    "underscore": "^1.11.0",
+    "uuid": "^8.3.0"
   },
   "scripts": {
-    "server": "PORT=8080 node index.js"
+    "start": "PORT=8080 nodemon --inspect index.js",
+    "deploy": "git push heroku master"
   },
   "browserslist": {
     "production": [

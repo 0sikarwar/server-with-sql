@@ -1,5 +1,8 @@
 const { dbConnection } = require("./database");
 const { path } = require("./utils");
+const { sendEmail } = require('./emailHelper')
+const { v4: uuidv4 } = require('uuid');
+const forgotPassHtml = require('./emailHelper/forgotPassHtml')
 const registerUser = (req) => {
 	const userData = path(["body", "userDocument"], req);
 	const { firstName, lastName, loginId, password } = userData;
@@ -15,11 +18,55 @@ const registerUser = (req) => {
             err.code === "ER_DUP_ENTRY" ? "INVALID_REQUEST" : err.code,
 				});
 			}
-			resolve({
-				loginResponseStatus: "SUCCESS",
-				userData: { email: loginId, firstName: firstName, lastName: lastName },
-			});
+				resolve({
+					loginResponseStatus: "SUCCESS",
+					userData: { email: loginId, firstName: firstName, lastName: lastName, emailResp },
+			})
 		});
+	});
+};
+
+const forgotPass = (req) => {
+	const userData = path(["body", "userDocument"], req);
+	const { loginId } = userData;
+	return new Promise((resolve) => {
+		const token = uuidv4();
+		const payload = forgotPassHtml.replace(/#link#/g,"https://0sikarwar.github.io/resetPass/"+token)
+		sendEmail(loginId, "Reset Password", "html", payload,(emailResp, mailError)=>{
+			const queryString =
+			`UPDATE userDetails SET token='${token}', tokentype='reset'  WHERE email = '${loginId}'`;
+			if(!mailError){
+				dbConnection.query(queryString, function (err, DbResp) {
+					if (err) {
+						console.log("DB_ERROR" + JSON.stringify(err));
+						resolve({
+							loginResponseStatus: err.code,
+						});
+						return
+					}
+					if(!DbResp.affectedRows){
+						resolve({
+							loginResponseStatus: "INVALID_USER",
+							userData: { email: loginId },
+							emailResp: "Mail not sent"
+						});
+						return
+					}
+						resolve({
+							loginResponseStatus: "SUCCESS",
+							userData: { email: loginId },
+							emailResp: "Mail sent"
+						});
+				});
+				return
+			} 
+				resolve({
+					loginResponseStatus: "FAILURE",
+					userData: { email: loginId },
+					emailResp: "Mail not sent"
+				});
+			
+		} )
 	});
 };
 
@@ -55,4 +102,5 @@ const loginUser = (req) => {
 module.exports = {
 	registerUser,
 	loginUser,
+	forgotPass
 };
