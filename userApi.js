@@ -20,7 +20,7 @@ const registerUser = (req) => {
 			}
 				resolve({
 					loginResponseStatus: "SUCCESS",
-					userData: { email: loginId, firstName: firstName, lastName: lastName, emailResp },
+					userData: { email: loginId, firstName: firstName, lastName: lastName },
 			})
 		});
 	});
