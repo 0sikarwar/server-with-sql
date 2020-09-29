@@ -4,7 +4,7 @@ const path = require("path");
 const app = express();
 const { connectToDb } = require("./database");
 const cors = require("cors");
-const { registerUser, loginUser, forgotPass } = require("./userApi");
+const { registerUser, loginUser, forgotPass, resetPass } = require("./userApi");
 
 app.use(cors());
 app.use(function (req, res, next) {
@@ -35,6 +35,11 @@ app.post("/login", (req, res) => {
 });
  app.post("/forgotpassword", (req, res) => {
 	forgotPass(req, res).then((obj) => {
+		res.json(obj);
+	});
+});
+ app.post("/resetpassword", (req, res) => {
+	resetPass(req, res).then((obj) => {
 		res.json(obj);
 	});
 });
