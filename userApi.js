@@ -3,6 +3,8 @@ const { path } = require("./utils");
 const { sendEmail } = require("./emailHelper");
 const { v4: uuidv4 } = require("uuid");
 const forgotPassHtml = require("./emailHelper/forgotPassHtml");
+const {HOME_URL} = require('./urlConstants')
+
 const registerUser = (req) => {
   const userData = path(["body", "userDocument"], req);
   const { firstName, lastName, loginId, password } = userData;
@@ -33,7 +35,7 @@ const forgotPass = (req) => {
     const token = uuidv4();
     const payload = forgotPassHtml.replace(
       /#link#/g,
-      "https://0sikarwar.github.io/resetPass/" + token
+      `${HOME_URL}/resetPass/${token}`
     );
     sendEmail(
       loginId,

@@ -1,3 +1,5 @@
+const {HOME_URL} = require('../urlConstants')
+
 let html = `<!DOCTYPE html>
 <html>
 <head>
@@ -271,6 +273,6 @@ let html = `<!DOCTYPE html>
 </body>
 </html>`
 
-html = html.replace(/#home#/g, "https://0sikarwar.github.io")
+html = html.replace(/#home#/g, HOME_URL)
 
 module.exports = html
